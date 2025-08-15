@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "Mini Game",
+  "version": "1.0",
+  "description": "A tiny Chrome game!",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon.png"
+  }
+}
