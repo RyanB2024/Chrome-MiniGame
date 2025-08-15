@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "A quick skydiving mini-game with pixel pets. Move left/right to catch hearts and avoid birds!",
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "index.html",
     "default_title": "Play Pixel Paws: Freefall"
   },
   "icons": {
