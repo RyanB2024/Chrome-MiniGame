@@ -1,13 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "Pixel Paws: Freefall (Mini Game)",
-  "version": "1.0.0",
-  "description": "A quick skydiving mini-game with pixel pets. Move left/right to catch hearts and avoid birds!",
-  "action": {
-    "default_popup": "index.html",
-    "default_title": "Play Pixel Paws: Freefall"
-  },
+  "name": "Pixel Paws: Freefall",
+  "version": "1.0",
+  "description": "A tiny Chrome extension game with cats, dogs, and freefall fun.",
   "icons": {
     "128": "assets/Menu.png"
-  }
+  },
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Pixel Paws"
+  },
+  "permissions": [
+    "storage"
+  ]
 }

@@ -1,35 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pixel Paws: Freefall</title>
     <link rel="stylesheet" href="style.css" />
-    <style>
-        body {
-            margin: 0;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        canvas {
-            display: block;
-            background-color: #87ceeb;
-            /* sky blue */
-            image-rendering: pixelated;
-            border: 2px solid #fff;
-        }
-    </style>
 </head>
-
 <body>
-    <canvas id="gameCanvas" width="360" height="540"></canvas>
+    <div id="app">
+        <canvas id="game" width="360" height="540"></canvas>
+        <div id="ui">
+            <button id="btnStart">Start</button>
+            <button id="btnShop">Shop</button>
+            <button id="btnCat">Cat</button>
+            <button id="btnDog">Dog</button>
+            <div id="score">0 ★ (Hi 0)</div>
+        </div>
+    </div>
     <script src="game.js"></script>
 </body>
-
 </html>
