@@ -1,10 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Mini Game",
+  "name": "Catch the Dot",
   "version": "1.0",
-  "description": "A tiny Chrome game!",
+  "description": "A tiny Chrome game where you click the moving dot!",
   "action": {
     "default_popup": "popup.html",
-    "default_icon": "icons/icon.png"
+    "default_icon": {
+      "16": "icons/icon128.png",
+      "48": "icons/icon128.png",
+      "128": "icons/icon128.png"
+    }
   }
 }
