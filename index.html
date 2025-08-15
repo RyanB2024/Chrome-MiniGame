@@ -1,13 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Catch the Dot!</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pixel Paws: Freefall</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background-color: #87ceeb;
+            /* sky blue */
+            image-rendering: pixelated;
+            border: 2px solid #fff;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Catch the Dot!</h1>
-    <canvas id="gameCanvas" width="300" height="300"></canvas>
-    <script src="script.js"></script>
+    <canvas id="gameCanvas" width="360" height="540"></canvas>
+    <script src="game.js"></script>
 </body>
+
 </html>

@@ -1,14 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Catch the Dot",
-  "version": "1.0",
-  "description": "A tiny Chrome game where you click the moving dot!",
+  "name": "Pixel Paws: Freefall (Mini Game)",
+  "version": "1.0.0",
+  "description": "A quick skydiving mini-game with pixel pets. Move left/right to catch hearts and avoid birds!",
   "action": {
     "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icons/icon.png",
-      "48": "icons/icon.png",
-      "128": "icons/icon.png"
-    }
+    "default_title": "Play Pixel Paws: Freefall"
+  },
+  "icons": {
+    "128": "assets/Menu.png"
   }
 }
