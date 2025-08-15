@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pixel Paws: Freefall</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="game.js" defer></script>
 </head>
+
 <body>
-    <div id="app">
+    <div id="intro">
+        <div id="score">Coins: 0</div>
         <canvas id="game" width="360" height="540"></canvas>
-        <div id="ui">
-            <button id="btnStart">Start</button>
-            <button id="btnShop">Shop</button>
-            <button id="btnCat">Cat</button>
-            <button id="btnDog">Dog</button>
-            <div id="score">0 ★ (Hi 0)</div>
-        </div>
+        <button id="btnStart">Start</button>
+        <button id="btnShop">Shop</button>
+        <button id="settings">Setting</button>
+        <button id="info">info</button>
     </div>
-    <script src="game.js"></script>
 </body>
+
 </html>
