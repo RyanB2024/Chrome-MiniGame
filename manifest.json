@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "Pixel Paws: Freefall",
   "version": "1.0",
-  "description": "A tiny Chrome extension game with cats, dogs, and freefall fun.",
+  "description": "A tiny Chrome extension game with a cat, and freefall fun.",
   "icons": {
-    "128": "assets/Menu.png"
+    "128": "icons/icon.png"
   },
   "action": {
     "default_popup": "index.html",
