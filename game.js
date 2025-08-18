@@ -1,13 +1,19 @@
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
-const bg = new Image();
+const bgMenu = new Image();
+const bgShop = new Image();
 
 //Menu Button
 let button = { x: 100, y: 300, width: 160, height: 50, radius: 12, text: "Start" };
 
-bg.src = "assets/Menu.png"; // path to your image
+bgMenu.src = "assets/Menu.png"; // path to your image
+bgShop.src = "assets/shop.png"; // path to your image
 
-bg.onload = () => {
+bgMenu.onload = () => {
+    ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+};
+
+bgShop.onload = () => {
     ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 };
 
@@ -48,7 +54,7 @@ function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // draw background first
-        ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(bgMenu, 0, 0, canvas.width, canvas.height);
 
         // draws start button
         ctx.fillStyle = "#459CA9";
@@ -64,8 +70,11 @@ function draw() {
     }
 
     else if (currentScreen === "shop") {
-        ctx.fillStyle = "#DFB792";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // draw background first
+        ctx.drawImage(bgShop, 0, 0, canvas.width, canvas.height);
+
         ctx.fillStyle = "black";
         ctx.font = "24px Arial";
         ctx.fillText("🛒 Shop Screen", 100, 100);
