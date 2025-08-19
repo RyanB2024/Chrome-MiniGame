@@ -12,9 +12,21 @@ let button = { x: 100, y: 300, width: 160, height: 50, radius: 12, text: "Start"
 // Correct file paths (case-sensitive!)
 bgMenu.src = "assets/Menu.png";
 bgShop.src = "assets/Shop.png";
-charSprite.src = "assets/Sprite.png"; // <- use your character image here
+charSprite.src = "assets/Sprite.png"; // <- your character image
 
 let currentScreen = "home"; // default view
+
+// Character state
+let player = {
+    x: 50,
+    y: 130,
+    width: 90,
+    height: 90,
+    speed: 4,
+    movingLeft: false,
+    movingRight: false,
+    facingRight: false // default: facing left
+};
 
 // Button listeners
 document.getElementById("btnHome").addEventListener("click", () => {
@@ -86,11 +98,24 @@ function draw() {
         ctx.fillText("ℹ️ Info Screen", 100, 100);
 
     } else if (currentScreen === "game") {
-        ctx.fillStyle = "#C2EAE7"; // light blue background for now
+        ctx.fillStyle = "#C2EAE7"; // light blue background
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw character at (50,50)
-        ctx.drawImage(charSprite, 120, 50, 90, 90); // scale to 48x48 px
+        // Draw player with facing direction
+        if (player.facingRight) {
+            ctx.save();
+            ctx.scale(-1, 1); // flip horizontally
+            ctx.drawImage(
+                charSprite,
+                -(player.x + player.width), // flip position
+                player.y,
+                player.width,
+                player.height
+            );
+            ctx.restore();
+        } else {
+            ctx.drawImage(charSprite, player.x, player.y, player.width, player.height);
+        }
     }
 }
 
@@ -111,9 +136,39 @@ canvas.addEventListener("click", (e) => {
     }
 });
 
-// Game update (expand later)
+// Handle key presses
+document.addEventListener("keydown", (e) => {
+    if (currentScreen === "game") {
+        if (e.key === "ArrowLeft") {
+            player.movingLeft = true;
+            player.facingRight = false;
+        }
+        if (e.key === "ArrowRight") {
+            player.movingRight = true;
+            player.facingRight = true;
+        }
+    }
+});
+
+document.addEventListener("keyup", (e) => {
+    if (e.key === "ArrowLeft") player.movingLeft = false;
+    if (e.key === "ArrowRight") player.movingRight = false;
+});
+
+// Game update
 function update() {
-    // animations, player movement, etc.
+    if (currentScreen === "game") {
+        if (player.movingLeft) {
+            player.x -= player.speed;
+            if (player.x < 0) player.x = 0; // prevent leaving screen
+        }
+        if (player.movingRight) {
+            player.x += player.speed;
+            if (player.x + player.width > canvas.width) {
+                player.x = canvas.width - player.width;
+            }
+        }
+    }
 }
 
 // Main loop
