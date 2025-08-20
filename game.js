@@ -4,17 +4,31 @@ const ctx = canvas.getContext("2d");
 // Background images
 const bgMenu = new Image();
 const bgShop = new Image();
-const charSprite = new Image(); // Character sprite
+const charSprite = new Image();
+const coinImg = new Image();
+const waterBalloonImg = new Image();
+const scoreDisplay = document.getElementById("score");
+
+// Persistent score variable
+let coinScore = 0;
+
+// Load saved coins on startup
+chrome.storage.local.get(['coins'], (result) => {
+    coinScore = result.coins || 0;
+    scoreDisplay.innerText = "Coins: " + coinScore;
+});
 
 // Menu Button
 let button = { x: 100, y: 300, width: 160, height: 50, radius: 12, text: "Start" };
 
-// Correct file paths (case-sensitive!)
+// Correct file paths
 bgMenu.src = "assets/Menu.png";
 bgShop.src = "assets/Shop.png";
-charSprite.src = "assets/Sprite.png"; // <- your character image
+charSprite.src = "assets/Sprite.png";
+coinImg.src = "assets/Coin.png";
+waterBalloonImg.src = "assets/WaterBalloon.png";
 
-let currentScreen = "home"; // default view
+let currentScreen = "home";
 
 // Character state
 let player = {
@@ -25,12 +39,30 @@ let player = {
     speed: 4,
     movingLeft: false,
     movingRight: false,
-    facingRight: false // default: facing left
+    facingRight: false,
+    hitboxOffsetX: 15,  // move inward horizontally
+    hitboxOffsetY: 20,  // move inward vertically
+    hitboxWidth: 60,    // smaller than actual width
+    hitboxHeight: 50    // smaller than actual height
 };
+
+// Game entities
+let coins = [];
+let balloons = [];
+let gameActive = false;
+
+// Spawn settings
+const coinSpeed = 2;
+const balloonSpeed = 3;
+const spawnInterval = 1000; // 1 second
+
+let coinSpawner;
+let balloonSpawner;
 
 // Button listeners
 document.getElementById("btnHome").addEventListener("click", () => {
     currentScreen = "home";
+    resetGame();
 });
 document.getElementById("btnShop").addEventListener("click", () => {
     currentScreen = "shop";
@@ -64,12 +96,10 @@ function draw() {
     if (currentScreen === "home") {
         ctx.drawImage(bgMenu, 0, 0, canvas.width, canvas.height);
 
-        // Draw Start button
         ctx.fillStyle = "#459CA9";
         roundRect(ctx, button.x, button.y, button.width, button.height, button.radius);
         ctx.fill();
 
-        // Button text
         ctx.fillStyle = "#EFEFEF";
         ctx.font = "40px Luckiest Guy";
         ctx.textAlign = "center";
@@ -78,7 +108,6 @@ function draw() {
 
     } else if (currentScreen === "shop") {
         ctx.drawImage(bgShop, 0, 0, canvas.width, canvas.height);
-
         ctx.fillStyle = "black";
         ctx.font = "24px Arial";
         ctx.fillText("🛒 Shop Screen", 100, 100);
@@ -98,20 +127,24 @@ function draw() {
         ctx.fillText("ℹ️ Info Screen", 100, 100);
 
     } else if (currentScreen === "game") {
-        ctx.fillStyle = "#C2EAE7"; // light blue background
+        ctx.fillStyle = "#C2EAE7";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw player with facing direction
+        // Draw coins
+        for (let coin of coins) {
+            ctx.drawImage(coinImg, coin.x, coin.y, coin.width, coin.height);
+        }
+
+        // Draw water balloons
+        for (let balloon of balloons) {
+            ctx.drawImage(waterBalloonImg, balloon.x, balloon.y, balloon.width, balloon.height);
+        }
+
+        // Draw player
         if (player.facingRight) {
             ctx.save();
-            ctx.scale(-1, 1); // flip horizontally
-            ctx.drawImage(
-                charSprite,
-                -(player.x + player.width), // flip position
-                player.y,
-                player.width,
-                player.height
-            );
+            ctx.scale(-1, 1);
+            ctx.drawImage(charSprite, -(player.x + player.width), player.y, player.width, player.height);
             ctx.restore();
         } else {
             ctx.drawImage(charSprite, player.x, player.y, player.width, player.height);
@@ -119,20 +152,18 @@ function draw() {
     }
 }
 
-// Detect clicks inside canvas (for the Start button on menu)
+// Detect clicks inside canvas
 canvas.addEventListener("click", (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseX = e.clientX - rect.left;
     const mouseY = e.clientY - rect.top;
 
-    if (
-        currentScreen === "home" && // only on menu
+    if (currentScreen === "home" &&
         mouseX >= button.x &&
         mouseX <= button.x + button.width &&
         mouseY >= button.y &&
-        mouseY <= button.y + button.height
-    ) {
-        currentScreen = "game"; // switch to game screen
+        mouseY <= button.y + button.height) {
+        startGame();
     }
 });
 
@@ -157,10 +188,10 @@ document.addEventListener("keyup", (e) => {
 
 // Game update
 function update() {
-    if (currentScreen === "game") {
+    if (currentScreen === "game" && gameActive) {
         if (player.movingLeft) {
             player.x -= player.speed;
-            if (player.x < 0) player.x = 0; // prevent leaving screen
+            if (player.x < 0) player.x = 0;
         }
         if (player.movingRight) {
             player.x += player.speed;
@@ -168,7 +199,84 @@ function update() {
                 player.x = canvas.width - player.width;
             }
         }
+
+        // Move coins upward
+        for (let i = coins.length - 1; i >= 0; i--) {
+            coins[i].y -= coinSpeed;
+            if (coins[i].y + coins[i].height < 0) {
+                coins.splice(i, 1);
+            } else if (isColliding(player, coins[i])) {
+                coins.splice(i, 1);
+                coinScore++;
+                scoreDisplay.innerText = "Coins: " + coinScore;
+                chrome.storage.local.set({ coins: coinScore });
+            }
+        }
+
+        // Move balloons downward
+        for (let i = balloons.length - 1; i >= 0; i--) {
+            balloons[i].y += balloonSpeed;
+            if (balloons[i].y > canvas.height) {
+                balloons.splice(i, 1);
+            } else if (isColliding(player, balloons[i])) {
+                gameOver();
+            }
+        }
     }
+}
+
+// Collision detection
+function isColliding(a, b) {
+    let ax = a.x + (a.hitboxOffsetX || 0);
+    let ay = a.y + (a.hitboxOffsetY || 0);
+    let aw = a.hitboxWidth || a.width;
+    let ah = a.hitboxHeight || a.height;
+
+    return (
+        ax < b.x + b.width &&
+        ax + aw > b.x &&
+        ay < b.y + b.height &&
+        ay + ah > b.y
+    );
+}
+
+// Start game
+function startGame() {
+    currentScreen = "game";
+    gameActive = true;
+    coins = [];
+    balloons = [];
+    player.x = 50;
+    player.y = 130;
+
+    // Start spawning coins and balloons
+    coinSpawner = setInterval(spawnCoin, spawnInterval);
+    balloonSpawner = setInterval(spawnBalloon, spawnInterval);
+}
+
+// Reset game
+function resetGame() {
+    gameActive = false;
+    clearInterval(coinSpawner);
+    clearInterval(balloonSpawner);
+}
+
+// Game over
+function gameOver() {
+    resetGame();
+    currentScreen = "home";
+}
+
+// Spawn coin
+function spawnCoin() {
+    const x = Math.random() * (canvas.width - 30);
+    coins.push({ x, y: canvas.height, width: 30, height: 30 });
+}
+
+// Spawn balloon
+function spawnBalloon() {
+    const x = Math.random() * (canvas.width - 40);
+    balloons.push({ x, y: -40, width: 40, height: 40 });
 }
 
 // Main loop
